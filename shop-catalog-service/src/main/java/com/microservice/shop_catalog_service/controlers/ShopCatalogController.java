@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,9 @@ public class ShopCatalogController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     @RequestMapping("/{productID}")
     public List<CatalogItem> getCatalog(@PathVariable("productID") String productID){
 
@@ -34,8 +38,16 @@ public class ShopCatalogController {
 
         return productRatings.stream().map(rating -> {
 
-           Products products =  restTemplate.getForObject("http://localhost:8081/products/" + rating.getProductID(), Products.class);
-                    assert products != null;
+           //Products products =  restTemplate.getForObject("http://localhost:8081/products/" + rating.getProductID(), Products.class);
+                   // assert products != null;
+
+            Products products = webClientBuilder.build()
+                    .get()
+                    .uri("http://localhost:8081/products/" + rating.getProductID())
+                    .retrieve()
+                    .bodyToMono(Products.class)
+                    .block();
+
                     return new CatalogItem(products.getProductName(), "Computer", products.getProductID());
         })
                 .collect(Collectors.toList());

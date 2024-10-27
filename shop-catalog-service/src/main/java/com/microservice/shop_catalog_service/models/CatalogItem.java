@@ -1,5 +1,7 @@
 package com.microservice.shop_catalog_service.models;
 
+import java.util.Objects;
+
 public class CatalogItem {
 
     private String productName;
@@ -34,5 +36,18 @@ public class CatalogItem {
 
     public String getProductID() {
         return productID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CatalogItem that = (CatalogItem) o;
+        return Objects.equals(productName, that.productName) && Objects.equals(productDescription, that.productDescription) && Objects.equals(productID, that.productID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productName, productDescription, productID);
     }
 }

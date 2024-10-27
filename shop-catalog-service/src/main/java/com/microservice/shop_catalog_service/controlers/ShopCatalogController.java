@@ -38,18 +38,16 @@ public class ShopCatalogController {
 
         return productRatings.stream().map(rating -> {
 
-           //Products products =  restTemplate.getForObject("http://localhost:8081/products/" + rating.getProductID(), Products.class);
-                   // assert products != null;
-
-            Products products = webClientBuilder.build()
+            Products [] products = webClientBuilder.build()
                     .get()
                     .uri("http://localhost:8081/products/" + rating.getProductID())
                     .retrieve()
-                    .bodyToMono(Products.class)
+                    .bodyToMono(Products[].class)
                     .block();
 
-                    return new CatalogItem(products.getProductName(), "Computer", products.getProductID());
+                    return new CatalogItem(products[0].getProductName(), "Computer", products[0].getProductID());
         })
+                .distinct()
                 .collect(Collectors.toList());
 
     }
